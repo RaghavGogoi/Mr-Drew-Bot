@@ -7,40 +7,44 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Add Chart.js for the Activity Graph -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
     :root { --primary: 99, 102, 241; }
-    body { font-family: 'Sora', sans-serif; background: #020617; color: white; overflow-x: hidden; }
+    body { font-family: 'Sora', sans-serif; background: #020617; color: white; overflow-x: hidden; scroll-behavior: smooth; }
+    
+    /* Smooth Mesh Background */
     .glow-bg { position: fixed; z-index: -1; width: 800px; height: 800px; background: radial-gradient(circle, rgba(var(--primary), 0.12) 0%, rgba(0,0,0,0) 70%); filter: blur(100px); animation: drift 25s infinite alternate ease-in-out; }
     @keyframes drift { from { transform: translate(-20%, -20%) scale(1); } to { transform: translate(20%, 20%) scale(1.1); } }
     
+    /* Refined Glassmorphism */
     .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
     .glass:hover { border-color: rgba(var(--primary), 0.3); background: rgba(255, 255, 255, 0.05); transform: translateY(-4px); }
     
     .reveal { animation: reveal 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; opacity: 0; transform: translateY(30px); }
     @keyframes reveal { to { opacity: 1; transform: translateY(0); } }
     
-    .btn-shimmer { position: relative; overflow: hidden; }
+    .btn-shimmer { position: relative; overflow: hidden; transition: all 0.3s; }
     .btn-shimmer::after { content: ""; position: absolute; top: -50%; left: -60%; width: 30%; height: 200%; background: rgba(255, 255, 255, 0.1); transform: rotate(35deg); transition: all 0.6s ease; }
     .btn-shimmer:hover::after { left: 130%; }
 
-    /* Centered Save Bar Fix */
+    /* Failsafe Centered Save Bar */
     #save-bar { 
-        left: 50%; 
-        transform: translate(-50%, 250%); 
+        position: fixed;
+        bottom: 2rem;
+        left: 50%;
+        width: 92%;
+        max-width: 48rem;
+        transform: translate(-50%, 200%);
         opacity: 0;
-        transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); 
+        transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        z-index: 100;
     }
-    #save-bar.show-bar { 
-        transform: translate(-50%, 0) !important; 
-        opacity: 1 !important; 
-    }
+    #save-bar.show-bar { transform: translate(-50%, 0); opacity: 1; }
 
-    /* Custom Scrollbar for Logs */
-    .log-scroll::-webkit-scrollbar { width: 4px; }
-    .log-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
-    .log-scroll::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.3); border-radius: 10px; }
+    /* Log Terminal Styling */
+    .log-container { height: 260px; overflow-y: auto; font-family: 'JetBrains Mono', monospace; }
+    .log-container::-webkit-scrollbar { width: 4px; }
+    .log-container::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.3); border-radius: 10px; }
     
     .no-scrollbar::-webkit-scrollbar { display: none; }
     input[type="checkbox"]:checked { background-color: var(--primary); }
@@ -52,7 +56,6 @@
     <div class="glow-bg bottom-[-10%] right-[-10%] opacity-50" style="animation-delay: -5s; --primary: 168, 85, 247;"></div>
 
     <div class="max-w-7xl mx-auto">
-        <!-- Header -->
         <header class="flex justify-between items-center mb-12 reveal">
             <div onclick="showDashboard()" class="cursor-pointer group">
                 <h1 class="text-3xl font-bold tracking-tight flex items-center gap-2">Mr. Drew <span class="text-indigo-500 group-hover:text-indigo-400 transition">Bot</span></h1>
@@ -62,7 +65,7 @@
                 </div>
             </div>
             <div id="user-display" class="flex items-center gap-4 glass px-4 py-2">
-                <div class="text-right"><p class="text-sm font-bold tracking-tight" id="username">Guest</p><button onclick="logout()" class="text-[10px] uppercase font-bold text-rose-500 hover:text-rose-400 tracking-tighter transition">Sign Out</button></div>
+                <div class="text-right"><p class="text-sm font-bold tracking-tight" id="username">Guest</p><button onclick="logout()" class="text-[10px] uppercase font-bold text-rose-500 hover:text-rose-400 transition">Sign Out</button></div>
                 <img id="user-avatar" src="" class="w-10 h-10 rounded-xl border border-white/10 ring-2 ring-indigo-500/20">
             </div>
         </header>
@@ -88,35 +91,29 @@
                     </div>
                     <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Latency</p>
                     <h2 id="stat-ping" class="text-4xl font-bold mt-1 tracking-tighter">0</h2>
-                    <p id="ping-status" class="mt-2 tracking-widest text-[10px] uppercase font-bold text-emerald-500">Connecting...</p>
+                    <p id="ping-status" class="mt-2 tracking-widest text-[10px] uppercase font-bold text-emerald-500">Checking...</p>
                 </div>
 
                 <!-- LIVE ACTIVITY CHART -->
                 <div class="glass p-6 md:col-span-2 reveal overflow-hidden" style="animation-delay: 0.3s">
-                    <h3 class="font-bold flex items-center gap-2 text-sm uppercase tracking-widest text-slate-400 mb-4">
-                        <i data-lucide="activity" class="w-4 h-4 text-indigo-400"></i> Bot Heartbeat
-                    </h3>
-                    <div class="h-32 w-full">
-                        <canvas id="activityChart"></canvas>
-                    </div>
+                    <h3 class="font-bold flex items-center gap-2 text-sm uppercase tracking-widest text-slate-400 mb-4"><i data-lucide="activity" class="w-4 h-4"></i> Performance Heartbeat</h3>
+                    <div class="h-32 w-full"><canvas id="activityChart"></canvas></div>
                 </div>
                 
-                <!-- Admin Servers List -->
-                <div class="glass p-6 md:col-span-2 row-span-1 reveal" style="animation-delay: 0.4s">
+                <!-- Admin Servers -->
+                <div class="glass p-6 md:col-span-2 reveal" style="animation-delay: 0.4s">
                     <h3 class="font-bold flex items-center gap-2 text-lg mb-6"><i data-lucide="server" class="w-5 h-5 text-indigo-400"></i> Admin Servers</h3>
                     <div id="guild-list" class="space-y-4 max-h-[300px] overflow-y-auto no-scrollbar pr-1"></div>
                 </div>
                 
-                <!-- SYSTEM LOGS (Scrollable Terminal) -->
+                <!-- SYSTEM LOGS (Scrollable) -->
                 <div class="glass p-6 md:col-span-2 reveal" style="animation-delay: 0.5s">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
-                            <i data-lucide="terminal" class="w-4 h-4"></i> System Logs
-                        </h3>
-                        <button onclick="document.getElementById('console-logs').innerHTML=''" class="text-[9px] uppercase font-bold text-slate-600 hover:text-slate-400 transition">Clear</button>
+                        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2"><i data-lucide="terminal" class="w-4 h-4"></i> System Logs</h3>
+                        <button onclick="document.getElementById('console-logs').innerHTML=''" class="text-[9px] font-bold text-slate-600 hover:text-slate-400 transition uppercase">Clear</button>
                     </div>
-                    <div id="console-logs" class="text-[11px] font-mono text-slate-400 space-y-2 leading-relaxed max-h-[260px] overflow-y-auto log-scroll pr-2">
-                        <div class="text-indigo-400/60">[INF] Encryption handshake complete...</div>
+                    <div id="console-logs" class="log-container text-[11px] text-slate-400 space-y-2 leading-relaxed">
+                        <div class="text-indigo-400/60">[SYS] Initializing security handshake...</div>
                     </div>
                 </div>
             </div>
@@ -126,12 +123,12 @@
         <div id="config-view" class="hidden reveal">
             <button onclick="showDashboard()" class="text-slate-400 hover:text-white mb-8 flex items-center gap-2 group transition text-sm font-semibold"><i data-lucide="chevron-left" class="group-hover:-translate-x-1 transition"></i> Dashboard</button>
             <div class="flex items-center gap-8 mb-12">
-                <img id="active-guild-icon" src="" class="w-24 h-24 rounded-[2rem] shadow-2xl border border-white/10 ring-4 ring-white/5">
-                <div><h2 id="active-guild-name" class="text-5xl font-bold tracking-tighter">Server</h2><p class="text-slate-400 mt-2 font-medium">Configuration Suite</p></div>
+                <img id="active-guild-icon" src="" class="w-24 h-24 rounded-[2.5rem] shadow-2xl border border-white/10 ring-4 ring-white/5">
+                <div><h2 id="active-guild-name" class="text-5xl font-bold tracking-tighter">Server</h2><p class="text-slate-400 mt-2 font-medium uppercase tracking-widest text-xs">Management Suite</p></div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- AutoMod -->
+                <!-- AutoMod Toggle -->
                 <div class="glass p-8 flex items-center justify-between border-white/5">
                     <div class="flex gap-5">
                         <div class="bg-indigo-500/10 p-4 rounded-2xl text-indigo-400 h-fit"><i data-lucide="shield-alert"></i></div>
@@ -146,14 +143,14 @@
                 <!-- Log Channels -->
                 <div class="glass p-8 border-white/5">
                     <h3 class="text-xl font-bold flex items-center gap-2 mb-4"><i data-lucide="list-video" class="text-indigo-400"></i> Log Channels</h3>
-                    <div id="channel-list" class="space-y-1 max-h-40 overflow-y-auto log-scroll pr-2"></div>
+                    <div id="channel-list" class="space-y-1 max-h-40 overflow-y-auto no-scrollbar"></div>
                 </div>
 
-                <!-- Custom Link Filter -->
+                <!-- Custom Filter -->
                 <div class="glass p-8 md:col-span-2 border-white/5">
-                    <h3 class="text-xl font-bold flex items-center gap-2 mb-2"><i data-lucide="link" class="text-indigo-400"></i> Custom Filter</h3>
+                    <h3 class="text-xl font-bold flex items-center gap-2 mb-2"><i data-lucide="link" class="text-indigo-400"></i> Blocked Domains</h3>
                     <div class="flex gap-4 mb-6">
-                        <input type="text" id="domain-input" placeholder="e.g. bit.ly" class="bg-slate-900 border border-white/10 rounded-xl px-4 py-3 flex-1 focus:outline-none focus:border-indigo-500 transition text-sm">
+                        <input type="text" id="domain-input" placeholder="e.g. scamsite.com" class="bg-slate-900 border border-white/10 rounded-xl px-4 py-3 flex-1 focus:outline-none focus:border-indigo-500 transition text-sm">
                         <button onclick="addDomain()" class="bg-indigo-600 px-6 py-3 rounded-xl font-bold hover:bg-indigo-500 transition text-sm">Add Domain</button>
                     </div>
                     <div id="domain-tags" class="flex flex-wrap gap-2"></div>
@@ -162,77 +159,66 @@
         </div>
     </div>
 
-    <!-- FIXED SAVE BAR -->
-    <div id="save-bar" class="fixed bottom-8 w-[92%] max-w-3xl glass bg-slate-900/95 border-indigo-500/50 p-4 z-50 flex items-center justify-between shadow-2xl">
+    <!-- SAVE BAR -->
+    <div id="save-bar" class="glass bg-slate-900/95 border-indigo-500/50 p-4 flex items-center justify-between shadow-2xl">
         <div class="flex items-center gap-4 px-2">
             <div class="bg-amber-500/20 p-2 rounded-xl text-amber-500"><i data-lucide="alert-circle" class="w-5 h-5"></i></div>
-            <p class="font-bold text-sm tracking-tight text-slate-100">Unsaved Changes Detected!</p>
+            <p class="font-bold text-sm tracking-tight text-slate-100">Careful — you have unsaved changes!</p>
         </div>
         <div class="flex items-center gap-4">
-            <button onclick="resetChanges()" class="text-xs font-bold text-slate-400 hover:text-white uppercase transition">Reset</button>
+            <button onclick="resetChanges()" class="text-xs font-bold text-slate-400 hover:text-white transition uppercase">Reset</button>
             <button onclick="saveChanges()" id="save-btn" class="btn-shimmer bg-indigo-600 px-8 py-3 rounded-xl font-black text-xs uppercase hover:bg-indigo-500 transition shadow-xl shadow-indigo-600/30">Save Sync</button>
         </div>
     </div>
 
     <script>
+        // --- PRODUCTION CONFIG ---
+        // For localhost use: "http://localhost:3000"
+        // For production use your Render URL: "https://mr-drew-bot.onrender.com"
+        const BACKEND_URL = ""; 
+
         let currentGuildId = null;
         let originalSettings = { autoMod: true, logChannels: [], blockedDomains: [] };
         let currentSettings = { autoMod: true, logChannels: [], blockedDomains: [] };
         let allGuilds = [];
         let activityChart;
 
-        // 1. LIVE CHART INITIALIZATION
+        // 1. LIVE CHART
         function initChart() {
             const ctx = document.getElementById('activityChart').getContext('2d');
             activityChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: Array(20).fill(''),
+                    labels: Array(30).fill(''),
                     datasets: [{
-                        label: 'Latency (ms)',
-                        data: Array(20).fill(0),
+                        data: Array(30).fill(0),
                         borderColor: '#6366f1',
                         borderWidth: 2,
                         fill: true,
-                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        backgroundColor: 'rgba(99, 102, 241, 0.05)',
                         tension: 0.4,
                         pointRadius: 0
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    responsive: true, maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
-                    scales: {
-                        x: { display: false },
-                        y: { 
-                            display: true, 
-                            grid: { color: 'rgba(255,255,255,0.05)' },
-                            ticks: { color: '#475569', font: { size: 10 } }
-                        }
-                    }
+                    scales: { x: { display: false }, y: { display: true, grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#475569', font: { size: 10 } } } }
                 }
             });
         }
 
         async function updateDashboard() {
             try {
-                const res = await fetch('/api/stats');
+                const res = await fetch(`${BACKEND_URL}/api/stats`);
                 const data = await res.json();
-                
                 document.getElementById('stat-users').innerText = data.users.toLocaleString();
-                document.getElementById('stat-ping').innerHTML = `${data.ping}<span class="text-base font-normal text-slate-500 ml-1">ms</span>`;
+                document.getElementById('stat-ping').innerText = data.ping;
                 
                 const statusEl = document.getElementById('ping-status');
-                if (data.ping < 100) {
-                    statusEl.innerText = "Optimal Performance";
-                    statusEl.className = "mt-2 tracking-widest text-[10px] uppercase font-bold text-emerald-500";
-                } else {
-                    statusEl.innerText = "High Latency";
-                    statusEl.className = "mt-2 tracking-widest text-[10px] uppercase font-bold text-rose-500";
-                }
+                statusEl.innerText = data.ping < 150 ? "Optimal Performance" : "High Latency";
+                statusEl.className = data.ping < 150 ? "mt-2 tracking-widest text-[10px] uppercase font-bold text-emerald-500" : "mt-2 tracking-widest text-[10px] uppercase font-bold text-rose-500";
 
-                // Update Chart
                 if (activityChart) {
                     activityChart.data.datasets[0].data.push(data.ping);
                     activityChart.data.datasets[0].data.shift();
@@ -249,13 +235,12 @@
             currentGuildId = id;
             document.getElementById('dashboard-view').classList.add('hidden');
             document.getElementById('config-view').classList.remove('hidden');
-            
             document.getElementById('active-guild-name').innerText = guild.name;
             document.getElementById('active-guild-icon').src = guild.icon;
 
             const [chRes, confRes] = await Promise.all([
-                fetch(`/api/guild/channels/${id}`),
-                fetch(`/api/guild/config/${id}`)
+                fetch(`${BACKEND_URL}/api/guild/channels/${id}`),
+                fetch(`${BACKEND_URL}/api/guild/config/${id}`)
             ]);
 
             const channels = await chRes.json();
@@ -274,7 +259,7 @@
             const list = document.getElementById('channel-list');
             list.innerHTML = channels.map(ch => `
                 <label class="flex items-center justify-between p-3 rounded-xl hover:bg-white/5 cursor-pointer transition">
-                    <span class="text-xs font-medium text-slate-300 truncate max-w-[80%]"># ${ch.name}</span>
+                    <span class="text-xs font-medium text-slate-300 truncate"># ${ch.name}</span>
                     <input type="checkbox" class="w-4 h-4 rounded border-white/10 bg-slate-800 text-indigo-600 focus:ring-0" 
                         ${currentSettings.logChannels.includes(ch.id) ? 'checked' : ''}
                         onchange="toggleChannel('${ch.id}')">
@@ -305,81 +290,75 @@
             const val = input.value.trim().toLowerCase();
             if (val && !currentSettings.blockedDomains.includes(val)) {
                 currentSettings.blockedDomains.push(val);
-                input.value = '';
-                renderDomains();
-                checkDirty();
+                input.value = ''; renderDomains(); checkDirty();
             }
         }
 
         function removeDomain(d) {
             currentSettings.blockedDomains = currentSettings.blockedDomains.filter(x => x !== d);
-            renderDomains();
-            checkDirty();
+            renderDomains(); checkDirty();
         }
 
         document.getElementById('automod-toggle').addEventListener('change', (e) => {
-            currentSettings.autoMod = e.target.checked;
-            checkDirty();
+            currentSettings.autoMod = e.target.checked; checkDirty();
         });
 
         function isDirty() { return JSON.stringify(currentSettings) !== JSON.stringify(originalSettings); }
         function checkDirty() {
             const bar = document.getElementById('save-bar');
-            if (isDirty()) bar.classList.add('show-bar');
-            else bar.classList.remove('show-bar');
+            if (isDirty()) bar.classList.add('show-bar'); else bar.classList.remove('show-bar');
         }
 
         async function saveChanges() {
             const btn = document.getElementById('save-btn');
             btn.innerText = "Syncing..."; btn.disabled = true;
             try {
-                const res = await fetch('/api/guild/config', { 
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'application/json' }, 
+                const res = await fetch(`${BACKEND_URL}/api/guild/config`, { 
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, 
                     body: JSON.stringify({ guildId: currentGuildId, ...currentSettings }) 
                 });
                 const data = await res.json();
                 originalSettings = JSON.parse(JSON.stringify(data));
                 checkDirty();
-                addLog(`[SYNC] Config verified for ${currentGuildId}`);
-            } catch (e) { alert("Sync Error"); } 
+                addLog(`[SYNC] Node configuration pushed for ${currentGuildId}`);
+            } catch (e) { alert("Cloud Sync Error"); } 
             finally { btn.innerText = "Save Sync"; btn.disabled = false; }
         }
 
         function resetChanges() {
             currentSettings = JSON.parse(JSON.stringify(originalSettings));
             document.getElementById('automod-toggle').checked = currentSettings.autoMod;
-            renderDomains();
-            checkDirty();
+            renderDomains(); checkDirty();
+            addLog(`[RST] UI state reverted to cloud original`);
         }
 
         function addLog(text) { 
             const logBox = document.getElementById('console-logs');
             const log = document.createElement('div');
             log.innerHTML = `<span class="text-indigo-400/50">${new Date().toLocaleTimeString()}</span> ${text}`; 
-            logBox.prepend(log); // Show newest logs at top
+            logBox.prepend(log);
         }
 
         function showDashboard() { 
-            if (isDirty()) { if (!confirm("Unsaved changes! Proceed?")) return; resetChanges(); } 
+            if (isDirty()) { if (!confirm("Discard unsaved changes?")) return; resetChanges(); } 
             document.getElementById('dashboard-view').classList.remove('hidden'); 
             document.getElementById('config-view').classList.add('hidden'); 
         }
 
         async function init() {
             const dId = localStorage.getItem('discordId');
-            if (!dId) { window.location.href = '/api/auth/discord'; return; }
+            if (!dId) { window.location.href = `${BACKEND_URL}/api/auth/discord`; return; }
             document.getElementById('username').innerText = localStorage.getItem('username');
             document.getElementById('user-avatar').src = localStorage.getItem('avatar');
             
             initChart();
-            const gRes = await fetch('/api/user/guilds', { headers: { 'user-id': dId } });
+            const gRes = await fetch(`${BACKEND_URL}/api/user/guilds`, { headers: { 'user-id': dId } });
             allGuilds = await gRes.json();
             document.getElementById('guild-list').innerHTML = allGuilds.map(g => `
                 <div class="flex items-center justify-between p-4 glass group">
                     <div class="flex items-center gap-4">
-                        <img src="${g.icon}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(g.name)}'" class="w-12 h-12 rounded-2xl border border-white/5">
-                        <div class="flex flex-col"><span class="text-sm font-bold">${g.name}</span><span class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Administrator</span></div>
+                        <img src="${g.icon}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(g.name)}&background=6366f1&color=fff'" class="w-12 h-12 rounded-2xl shadow-lg border border-white/5">
+                        <div class="flex flex-col"><span class="text-sm font-bold tracking-tight">${g.name}</span><span class="text-[10px] text-slate-500 uppercase font-black tracking-widest">Administrator</span></div>
                     </div>
                     <button onclick="openManage('${g.id}')" class="btn-shimmer bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 px-4 py-2 rounded-xl text-xs font-black uppercase hover:bg-indigo-600 hover:text-white transition">Manage</button>
                 </div>

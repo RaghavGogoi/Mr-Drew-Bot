@@ -19,7 +19,7 @@
 
         if (code) {
             // 2. Send the code to your Bot's backend
-            fetch('/api/auth/discord/callback', {
+            fetch('https://mr-drew-bot.onrender.com/api/auth/discord/callback',{
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ code })
