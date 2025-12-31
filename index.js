@@ -18,7 +18,9 @@ const webPort = process.env.PORT || 3000;
 
 // 2. MIDDLEWARE & DB
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: 'https://mrdrew.netlify.app'
+}));
 app.use(express.static('public'));
 
 mongoose.connect(process.env.MONGODB_URI)
