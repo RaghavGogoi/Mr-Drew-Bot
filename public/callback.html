@@ -3,23 +3,28 @@
 <head>
     <title>Logging in...</title>
     <style>
-        body { background: #020617; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        body { background: #020617; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .loader { border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid #6366f1; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
     <div style="text-align: center;">
-        <h2>Authenticating with Mr. Drew Bot...</h2>
-        <p>You will be redirected shortly.</p>
+        <div class="loader" style="margin: 0 auto 20px auto;"></div>
+        <h2 style="letter-spacing: -1px;">Authenticating...</h2>
+        <p style="color: #64748b; font-size: 14px;">Mr. Drew Bot is verifying your credentials.</p>
     </div>
 
     <script>
-        // 1. Get the "code" from the URL (?code=XYZ...)
+        // 1. SET YOUR BACKEND URL HERE
+        const BACKEND_URL = "https://mr-drew-bot.onrender.com"; 
+
         const urlParams = new URLSearchParams(window.location.search);
         const code = urlParams.get('code');
 
         if (code) {
-            // 2. Send the code to your Bot's backend
-            fetch('https://mr-drew-bot.onrender.com/api/auth/discord/callback',{
+            // 2. We must fetch from the RENDER URL, not the current Netlify URL
+            fetch(`${BACKEND_URL}/api/auth/discord/callback`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ code })
@@ -27,19 +32,21 @@
             .then(res => res.json())
             .then(data => {
                 if (data.token) {
-                    // 3. Store user data in the browser so the dashboard knows who you are
+                    // Store the info in the browser
                     localStorage.setItem('token', data.token);
+                    localStorage.setItem('discordId', data.user.dId);
                     localStorage.setItem('username', data.user.username);
                     localStorage.setItem('avatar', data.user.avatar);
-                    localStorage.setItem('discordId', data.user.dId);
                     
-                    // 4. Go back to the dashboard
+                    // Go back to the dashboard
                     window.location.href = '/index.html';
+                } else {
+                    document.body.innerHTML = "<h2>Authentication Failed: No Token Received.</h2>";
                 }
             })
             .catch(err => {
                 console.error(err);
-                document.body.innerHTML = "<h2>Authentication Failed. Please try again.</h2>";
+                document.body.innerHTML = "<h2>Error connecting to Backend. Make sure Render is awake!</h2>";
             });
         }
     </script>
