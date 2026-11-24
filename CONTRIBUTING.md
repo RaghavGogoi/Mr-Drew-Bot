@@ -20,7 +20,7 @@ If you find a bug or issue:
 1. Fork the repository on GitHub.
 2. Clone your fork locally:
    ```bash
-   git clone https://github.com/your-username/mr-drew-bot.git
+   git clone https://github.com/RaghavGogoi/Mr-Drew-Bot.git
    cd mr-drew-bot
    ```
 3. Install dependencies:
