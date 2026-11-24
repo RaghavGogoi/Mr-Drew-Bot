@@ -1,4 +1,4 @@
-# Contributing to the Music Bot
+# Contributing to Mr. Drew's Discord Music Bot
 
 We welcome community contributions, bug reports, and enhancements.
 

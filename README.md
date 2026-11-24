@@ -1,4 +1,4 @@
-# Discord Music Bot
+# 🎵 Mr. Drew's Discord Music Bot
 
 A high-performance Discord music bot built with **Node.js** and **Discord.js v14**. Supports universal audio streaming, custom audio file uploads, interactive controller buttons, rich status embeds, and Direct Message (DM) remote control.
 

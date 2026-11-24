@@ -1,7 +1,7 @@
 {
-  "name": "mr.-drew-bot",
+  "name": "mr-drews-discord-music-bot",
   "version": "1.0.0",
-  "description": "High-fidelity, unrestricted Discord music bot with custom uploads, DM remote control, and interactive player controller",
+  "description": "Mr. Drew's Discord Music Bot - High-fidelity, unrestricted Discord music bot with custom uploads, DM remote control, and interactive player controller",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
