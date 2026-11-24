@@ -2,6 +2,19 @@
 
 We welcome community contributions, bug reports, and enhancements.
 
+## Reporting Bugs
+
+If you find a bug or issue:
+
+1. Check existing issues in the GitHub repository to see if it has already been reported.
+2. If not, open a new issue using the **Bug Report** template.
+3. Include:
+   - Steps to reproduce the bug
+   - Expected behavior vs. actual behavior
+   - Node.js, FFmpeg, and yt-dlp versions
+   - Error messages or stack traces from the console (make sure to **redact your bot token and any sensitive credentials**)
+4. For security-related bugs, refer to [SECURITY.md](SECURITY.md).
+
 ## Development Workflow
 
 1. Fork the repository on GitHub.

@@ -293,6 +293,22 @@ To publish this repository to your own GitHub account:
 
 ---
 
+## 🐛 Bug Reports & Feature Requests
+
+Found a bug or have a suggestion? We use GitHub Issues to track feedback:
+
+- **Report a Bug**: [Open a Bug Report](https://github.com/your-username/your-repo-name/issues/new?template=bug_report.md) with steps to reproduce, logs, and your OS/Node/FFmpeg environment.
+- **Request a Feature**: [Open a Feature Request](https://github.com/your-username/your-repo-name/issues/new?template=feature_request.md) describing your idea.
+- **Security Vulnerabilities**: Please review [SECURITY.md](SECURITY.md) to report vulnerabilities privately.
+
+---
+
+## Contributing
+
+Contributions are always welcome! Check out [CONTRIBUTING.md](CONTRIBUTING.md) to learn how to set up the dev environment and submit pull requests.
+
+---
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
