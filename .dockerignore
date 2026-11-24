@@ -1,0 +1,8 @@
+node_modules
+.env
+temp_uploads/*
+!temp_uploads/.gitkeep
+.git
+.gitignore
+README.md
+*.log
