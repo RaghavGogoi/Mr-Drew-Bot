@@ -81,7 +81,7 @@ Before setting up the bot, ensure you have the following installed on your host 
 
 1. Clone your repository:
    ```bash
-   git clone https://github.com/RaghavGogoi/Mr-Drew-Bot.git
+   git clone https://github.com/RaghavGogoi/Mr-Drews-Discord-Music-Bot.git
    cd your-bot-repo
    ```
 
@@ -179,7 +179,7 @@ PM2 keeps your bot running in the background and restarts it automatically if th
 
 3. Clone your bot repository and configure `.env`:
    ```bash
-   git clone https://github.com/RaghavGogoi/Mr-Drew-Bot.git
+   git clone https://github.com/RaghavGogoi/Mr-Drews-Discord-Music-Bot.git
    cd your-bot-repo
    npm install
    cp .env.example .env
@@ -286,7 +286,7 @@ To publish this repository to your own GitHub account:
 1. Create a new empty repository on [GitHub](https://github.com/new) (do not initialize with README or license).
 2. Link your remote repository and push:
    ```bash
-   git remote add origin https://github.com/RaghavGogoi/Mr-Drew-Bot.git
+   git remote add origin https://github.com/RaghavGogoi/Mr-Drews-Discord-Music-Bot.git
    git branch -M main
    git push -u origin main
    ```
@@ -297,8 +297,8 @@ To publish this repository to your own GitHub account:
 
 Found a bug or have a suggestion? We use GitHub Issues to track feedback:
 
-- **Report a Bug**: [Open a Bug Report](https://github.com/RaghavGogoi/Mr-Drew-Bot/issues/new?template=bug_report.md) with steps to reproduce, logs, and your OS/Node/FFmpeg environment.
-- **Request a Feature**: [Open a Feature Request](https://github.com/RaghavGogoi/Mr-Drew-Bot/issues/new?template=feature_request.md) describing your idea.
+- **Report a Bug**: [Open a Bug Report](https://github.com/RaghavGogoi/Mr-Drews-Discord-Music-Bot/issues/new?template=bug_report.md) with steps to reproduce, logs, and your OS/Node/FFmpeg environment.
+- **Request a Feature**: [Open a Feature Request](https://github.com/RaghavGogoi/Mr-Drews-Discord-Music-Bot/issues/new?template=feature_request.md) describing your idea.
 - **Security Vulnerabilities**: Please review [SECURITY.md](SECURITY.md) to report vulnerabilities privately.
 
 ---

@@ -20,8 +20,8 @@ If you find a bug or issue:
 1. Fork the repository on GitHub.
 2. Clone your fork locally:
    ```bash
-   git clone https://github.com/RaghavGogoi/Mr-Drew-Bot.git
-   cd mr-drew-bot
+   git clone https://github.com/RaghavGogoi/Mr-Drews-Discord-Music-Bot.git
+   cd Mr-Drews-Discord-Music-Bot
    ```
 3. Install dependencies:
    ```bash
